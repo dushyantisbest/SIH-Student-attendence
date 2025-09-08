@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'QR Attendance System' %></title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <% if (typeof user !== 'undefined' && user) { %>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1>QR Attendance</h1>
+            <div class="nav-links">
+                <a href="/dashboard">Dashboard</a>
+                <% if (user.role === 'teacher') { %>
+                    <a href="/sessions">My Sessions</a>
+                    <a href="/create-session">Create Session</a>
+                <% } %>
+                <% if (user.role === 'student') { %>
+                    <a href="/scan">Scan QR</a>
+                    <a href="/attendance-history">My Attendance</a>
+                <% } %>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </nav>
+    <% } %>
+    
+    <main class="main-content">
+        <%- body %>
+    </main>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>

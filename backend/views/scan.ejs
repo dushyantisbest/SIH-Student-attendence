@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan QR Code - QR Attendance System</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1>QR Attendance</h1>
+            <div class="nav-links">
+                <a href="/dashboard">Dashboard</a>
+                <a href="/scan">Scan QR</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="main-content">
+        <div class="scan-container">
+            <div class="scan-card">
+                <h2>Scan QR Code</h2>
+                
+                <div id="cameraSection">
+                    <button id="startScanner" class="btn btn-primary">
+                        <i class="fas fa-qrcode"></i> Start QR Scanner
+                    </button>
+                    
+                    <div id="scannerContainer" style="display: none;">
+                        <h3 style="color: #4caf50;">📱 QR Scanner Active</h3>
+                        <div id="qr-reader" style="width: 100%; max-width: 500px; margin: 2rem auto; border: 3px solid #4caf50; border-radius: 15px;"></div>
+                        <button id="stopScanner" class="btn btn-danger" style="margin-top: 1rem;">
+                            <i class="fas fa-stop"></i> Stop Scanner
+                        </button>
+                        <p style="margin-top: 1rem;">Point camera at teacher's QR code</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/main.js"></script>
+    <script>
+        let html5QrcodeScanner = null;
+        
+        document.getElementById('startScanner').addEventListener('click', () => {
+            const config = {
+                fps: 10,
+                qrbox: { width: 250, height: 250 },
+                aspectRatio: 1.0
+            };
+            
+            html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", config);
+            
+            html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+            
+            document.getElementById('startScanner').style.display = 'none';
+            document.getElementById('scannerContainer').style.display = 'block';
+            
+            showToast('QR Scanner started! Point at QR code', 'success');
+        });
+        
+        document.getElementById('stopScanner').addEventListener('click', () => {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.clear();
+                html5QrcodeScanner = null;
+            }
+            
+            document.getElementById('startScanner').style.display = 'block';
+            document.getElementById('scannerContainer').style.display = 'none';
+            
+            showToast('Scanner stopped', 'info');
+        });
+        
+        async function onScanSuccess(decodedText, decodedResult) {
+            try {
+                showToast('📷 QR Code detected! Processing...', 'info');
+                
+                // Parse QR data
+                const qrData = JSON.parse(decodedText);
+                
+                // Mark attendance
+                const response = await fetch('/api/attendance/claim', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        sessionId: qrData.sessionId,
+                        qrData: qrData
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showToast('🎉 ATTENDANCE MARKED SUCCESSFULLY!', 'success');
+                    document.getElementById('stopScanner').click();
+                } else {
+                    showToast(result.message || 'Failed to mark attendance', 'error');
+                }
+            } catch (error) {
+                console.error('QR processing error:', error);
+                showToast('Invalid QR code format', 'error');
+            }
+        }
+        
+        function onScanFailure(error) {
+            // Ignore scan failures (too noisy)
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<%- include('layout', { title: 'Session Attendance', user: user, body: `
+<div class="main-content">
+    <div class="session-header">
+        <h2 id="sessionTitle">Session Attendance</h2>
+        <p id="sessionInfo"></p>
+    </div>
+    
+    <div class="attendance-stats">
+        <div class="stat-card stat-blue">
+            <h3 id="totalStudents">0</h3>
+            <p>Total Students</p>
+        </div>
+        <div class="stat-card stat-green">
+            <h3 id="presentCount">0</h3>
+            <p>Present</p>
+        </div>
+        <div class="stat-card stat-red">
+            <h3 id="absentCount">0</h3>
+            <p>Absent</p>
+        </div>
+        <div class="stat-card stat-orange">
+            <h3 id="attendancePercent">0%</h3>
+            <p>Attendance Rate</p>
+        </div>
+    </div>
+    
+    <div class="attendance-controls">
+        <button id="markAllPresent" class="btn btn-success">Mark All Present</button>
+        <button id="markAllAbsent" class="btn btn-danger">Mark All Absent</button>
+        <button id="saveChanges" class="btn btn-primary">Save Changes</button>
+    </div>
+    
+    <div class="students-list">
+        <div class="list-header">
+            <h3>Students Attendance</h3>
+            <input type="text" id="searchStudent" placeholder="Search students..." class="search-input">
+        </div>
+        <div id="studentsContainer">
+            <p>Loading students...</p>
+        </div>
+    </div>
+</div>
+
+<script src="/js/session-attendance.js"></script>
+` }) %>

@@ -1,0 +1,104 @@
+<%- include('layout', { title: 'Create Session', user: user, body: `
+<div class="main-content">
+    <div class="auth-card" style="max-width: 600px; margin: 2rem auto;">
+        <h2>Create Session</h2>
+        <form id="createSessionForm">
+            <div class="form-group">
+                <label for="courseName">Course Name</label>
+                <input type="text" id="courseName" name="courseName" placeholder="e.g., Computer Science 101" required>
+            </div>
+            <div class="form-group">
+                <label for="courseCode">Course Code</label>
+                <input type="text" id="courseCode" name="courseCode" placeholder="e.g., CS101" required>
+            </div>
+            <div class="form-group">
+                <label for="title">Session Title</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="duration">Duration (minutes)</label>
+                <input type="number" id="duration" name="duration" value="60" min="5" max="180">
+            </div>
+            <button type="submit" class="btn btn-primary">Create Session</button>
+        </form>
+    </div>
+</div>
+
+<div id="qrModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000;">
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 15px; text-align: center;">
+        <h3 id="qrTitle">QR Code</h3>
+        <div id="qrCodeContainer" style="margin: 2rem 0;"></div>
+        <button onclick="closeQRModal()" class="btn btn-danger">Close</button>
+    </div>
+</div>
+
+<script>
+document.getElementById('createSessionForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData);
+    
+    // Create course data
+    const courseData = {
+        name: data.courseName,
+        code: data.courseCode,
+        description: data.description
+    };
+    
+    try {
+        // First create/find the course
+        const courseResponse = await fetch('/api/courses/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(courseData)
+        });
+        
+        const courseResult = await courseResponse.json();
+        
+        if (courseResult.success) {
+            // Then create session with the course ID
+            const sessionData = {
+                course: courseResult.data.course._id,
+                title: data.title,
+                description: data.description,
+                duration: data.duration
+            };
+            
+            const response = await fetch('/api/sessions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(sessionData)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                showToast('Session created successfully!', 'success');
+                showQRCode(result.data.session.qrCode, data.title);
+            } else {
+                showToast(result.message || 'Failed to create session', 'error');
+            }
+        } else {
+            showToast('Failed to create course', 'error');
+        }
+    } catch (error) {
+        showToast('Failed to create session', 'error');
+    }
+});
+
+function showQRCode(qrCode, title) {
+    document.getElementById('qrTitle').textContent = 'QR Code - ' + title;
+    document.getElementById('qrCodeContainer').innerHTML = '<img src="' + qrCode + '" style="max-width: 300px; border: 2px solid #ddd; border-radius: 10px;">';
+    document.getElementById('qrModal').style.display = 'block';
+}
+
+function closeQRModal() {
+    document.getElementById('qrModal').style.display = 'none';
+    window.location.href = '/sessions';
+}
+</script>
+` }) %>

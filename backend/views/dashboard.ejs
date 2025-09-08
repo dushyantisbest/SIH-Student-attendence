@@ -1,0 +1,41 @@
+<%- include('layout', { title: 'Dashboard', user: user, body: `
+<div class="main-content">
+    <h1>Welcome back, ${user.name}!</h1>
+    <p>Role: <strong>${user.role.toUpperCase()}</strong></p>
+    
+    <div class="dashboard-grid">
+        ${user.role === 'teacher' ? `
+            <div class="dashboard-card" onclick="window.location.href='/create-session'">
+                <i class="fas fa-plus fa-3x" style="color: #667eea; margin-bottom: 1rem;"></i>
+                <h3>Create Session</h3>
+                <p>Start a new attendance session</p>
+            </div>
+            <div class="dashboard-card" onclick="window.location.href='/sessions'">
+                <i class="fas fa-qrcode fa-3x" style="color: #4caf50; margin-bottom: 1rem;"></i>
+                <h3>My Sessions</h3>
+                <p>View and manage your sessions</p>
+            </div>
+        ` : ''}
+        
+        ${user.role === 'student' ? `
+            <div class="dashboard-card" onclick="window.location.href='/scan'">
+                <i class="fas fa-camera fa-3x" style="color: #667eea; margin-bottom: 1rem;"></i>
+                <h3>Scan QR Code</h3>
+                <p>Mark your attendance</p>
+            </div>
+            <div class="dashboard-card" onclick="window.location.href='/attendance-history'">
+                <i class="fas fa-chart-line fa-3x" style="color: #4caf50; margin-bottom: 1rem;"></i>
+                <h3>Attendance History</h3>
+                <p>View your attendance records</p>
+            </div>
+        ` : ''}
+        
+        <div class="dashboard-card">
+            <i class="fas fa-user fa-3x" style="color: #ff9800; margin-bottom: 1rem;"></i>
+            <h3>Profile</h3>
+            <p>Department: ${user.department || 'Not specified'}</p>
+            ${user.studentId ? `<p>Student ID: ${user.studentId}</p>` : ''}
+        </div>
+    </div>
+</div>
+` }) %>

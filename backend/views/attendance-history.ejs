@@ -1,0 +1,49 @@
+<%- include('layout', { title: 'Attendance History', user: user, body: `
+<div class="main-content">
+    <h2>My Attendance History</h2>
+    
+    <div class="filter-section">
+        <h3>Filter Attendance</h3>
+        <div class="filter-buttons">
+            <button class="btn btn-primary filter-btn active" data-filter="all">All Time</button>
+            <button class="btn btn-primary filter-btn" data-filter="today">Today</button>
+            <button class="btn btn-primary filter-btn" data-filter="week">This Week</button>
+            <button class="btn btn-primary filter-btn" data-filter="month">This Month</button>
+            <button class="btn btn-primary filter-btn" data-filter="semester">Current Semester</button>
+        </div>
+        
+        <div class="course-filter">
+            <label for="courseFilter">Course:</label>
+            <select id="courseFilter">
+                <option value="">All Courses</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="stats-section">
+        <div class="stat-card stat-green">
+            <h3 id="totalClasses">0</h3>
+            <p>Total Classes</p>
+        </div>
+        <div class="stat-card stat-blue">
+            <h3 id="attendedClasses">0</h3>
+            <p>Attended</p>
+        </div>
+        <div class="stat-card stat-orange">
+            <h3 id="attendanceRate">0%</h3>
+            <p>Attendance Rate</p>
+        </div>
+    </div>
+    
+    <div class="attendance-list">
+        <div class="list-header">
+            <h3>Attendance Records</h3>
+        </div>
+        <div id="attendanceContainer">
+            <p>Loading attendance records...</p>
+        </div>
+    </div>
+</div>
+
+<script src="/js/attendance-history.js"></script>
+` }) %>
